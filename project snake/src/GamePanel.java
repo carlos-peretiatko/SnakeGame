@@ -9,7 +9,7 @@ import java.util.LinkedList;
 public class GamePanel extends JPanel implements ActionListener {
 
     private final int TAMANHO_BLOCO = 20; // Tamanho do bloco da cobrinha
-    private final int LARGURA = 800, ALTURA = 600; // Tamanho da tela do jogo
+    private final int LARGURA = 780, ALTURA = 550; // Tamanho da tela do jogo
     private final LinkedList<Point> cobrinha = new LinkedList<>();
     private Point comida;
     private boolean gameOver = false;
@@ -21,7 +21,7 @@ public class GamePanel extends JPanel implements ActionListener {
         this.setBackground(Color.BLACK);
         this.setFocusable(true);
         this.addKeyListener(new KeyAdapter() {
-            @Override
+            @Override //sobrepoe
             public void keyPressed(KeyEvent e) {
                 if (!gameOver) {
                     mudarDirecao(e.getKeyCode());
@@ -41,7 +41,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (!gameOver) {
+        if (!gameOver) { //diferente de gameover true
             moverCobrinha();
             verificarColisao();
             repaint(); // Atualiza a tela
@@ -92,7 +92,7 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void gerarComida() {
-        int x = (int) (Math.random() * (LARGURA / TAMANHO_BLOCO)) * TAMANHO_BLOCO;
+        int x = (int) (Math.random() * (LARGURA / TAMANHO_BLOCO)) * TAMANHO_BLOCO; //gera comida em uma posição aleatória pelo calculo
         int y = (int) (Math.random() * (ALTURA / TAMANHO_BLOCO)) * TAMANHO_BLOCO;
         comida = new Point(x, y);
     }
@@ -109,24 +109,38 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    @Override
+    @Override //sobrepoe
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
         if (gameOver) {
             g.setColor(Color.RED);
-            g.drawString("Game Over! Feche e abra para tentar outra vez!", LARGURA / 2 - 100, ALTURA / 2);
-            g.drawString("Pontuação: " + (cobrinha.size() - 1), LARGURA / 2 - 50, ALTURA / 2 + 20);
-            
-            
+            g.setFont(new Font("Arial", Font.BOLD, 20));
+            g.drawString("Game Over!", LARGURA / 2 - 50, ALTURA / 2 - 40);
+            g.drawString("Pontuação: " + (cobrinha.size() - 1), LARGURA / 2 - 50, ALTURA / 2);
+            g.drawString("Pressione R para reiniciar", LARGURA / 2 - 100, ALTURA / 2 + 40);
+            g.drawString("Pressione ESC para voltar ao menu", LARGURA / 2 - 120, ALTURA / 2 + 80);
         } else {
+            // Desenha a pontuação durante o jogo
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD, 16));
+            g.drawString("Pontuação: " + (cobrinha.size() - 1), 10, 20);
+
+            // Desenha a cobra
             g.setColor(Color.GREEN);
             for (Point p : cobrinha) {
                 g.fillRect(p.x, p.y, TAMANHO_BLOCO, TAMANHO_BLOCO);
             }
 
+            // Desenha a comida
             g.setColor(Color.RED);
             g.fillRect(comida.x, comida.y, TAMANHO_BLOCO, TAMANHO_BLOCO);
         }
+    }
+
+    // Adicione este método para reiniciar o jogo
+    public void reiniciarJogo() {
+        gameOver = false;
+        iniciarJogo();
     }
 }
